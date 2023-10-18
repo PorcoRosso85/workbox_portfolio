@@ -20,7 +20,17 @@ if (typeof importScripts === "function") {
   };
 
   router("/$", "GET", {
-    text: "hello, world",
+    text: ` <div hx-ext="debug">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <button hx-get="/workbox_portfolio/hello" hx-target="#target" hx-swap="innerHTML">hx /hello</button><br />
+    <div id="target"></div>
+    </div> `,
+    headers: { "Content-Type": "text/html" },
+  });
+
+  router("/hello", "GET", {
+    text: "<div>hello, world</div>",
+    headers: { "Content-Type": "text/html" },
   });
 
   router("/bye", "GET", {
