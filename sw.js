@@ -18,7 +18,7 @@ if (typeof importScripts === "function") {
   };
 
   // 使用例
-  router("/bye", "GET", {
+  router("/workbox_portfolio/bye", "GET", {
     text: `
         <div>
           <div>child</div>
@@ -28,7 +28,7 @@ if (typeof importScripts === "function") {
     headers: { "Content-Type": "text/html" },
   });
 
-  router("/$", "GET", {
+  router("/workbox_portfolio/$", "GET", {
     text: "hello, world",
   });
 
@@ -41,7 +41,7 @@ if (typeof importScripts === "function") {
   // );
 
   workbox.routing.registerRoute(
-    new RegExp("/hello"),
+    new RegExp("/workbox_portfolio/hello"),
     ({ event }) => {
       return new Response(
         `
