@@ -5,9 +5,11 @@ if (typeof importScripts === "function") {
 
   workbox.setConfig({ debug: true });
 
+  const subDirectory = "/workbox_portfolio";
+
   const router = (route, method, responseOptions) => {
     workbox.routing.registerRoute(
-      new RegExp(route),
+      new RegExp(`${subDirectory}${route}`),
       ({ event }) => {
         return new Response(responseOptions.text, {
           headers: responseOptions.headers || {},
@@ -17,9 +19,12 @@ if (typeof importScripts === "function") {
     );
   };
 
-  // 使用例
-  router("/workbox_portfolio/bye", "GET", {
-    text: html`
+  router("/$", "GET", {
+    text: "hello, world",
+  });
+
+  router("/bye", "GET", {
+    text: `
       <div>
         <div>child</div>
         parent
@@ -27,32 +32,4 @@ if (typeof importScripts === "function") {
     `,
     headers: { "Content-Type": "text/html" },
   });
-
-  router("/workbox_portfolio/$", "GET", {
-    text: "hello, world",
-  });
-
-  // workbox.routing.registerRoute(
-  //   new RegExp("/$"),
-  //   ({ event }) => {
-  //     return new Response("Hello, world!");
-  //   },
-  //   "GET"
-  // );
-
-  workbox.routing.registerRoute(
-    new RegExp("/workbox_portfolio/hello"),
-    ({ event }) => {
-      return new Response(
-        html`
-          <div>
-            <div>child</div>
-            parent
-          </div>
-        `,
-        { headers: { "Content-Type": "text/html" } }
-      );
-    },
-    "GET"
-  );
 }
