@@ -19,12 +19,12 @@ if (typeof importScripts === "function") {
 
   // 使用例
   router("/workbox_portfolio/bye", "GET", {
-    text: `
-        <div>
-          <div>child</div>
-          parent
-        </div>
-      `,
+    text: html`
+      <div>
+        <div>child</div>
+        parent
+      </div>
+    `,
     headers: { "Content-Type": "text/html" },
   });
 
@@ -44,7 +44,7 @@ if (typeof importScripts === "function") {
     new RegExp("/workbox_portfolio/hello"),
     ({ event }) => {
       return new Response(
-        `
+        html`
           <div>
             <div>child</div>
             parent
