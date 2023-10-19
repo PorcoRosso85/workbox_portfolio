@@ -141,4 +141,169 @@ if (typeof importScripts === "function") {
     `,
     headers: { "Content-Type": "text/html" },
   });
+
+  router("/page/line", "GET", {
+    text: /*html*/ `
+      <script src="https://unpkg.com/hyperscript.org@0.9.11"></script>
+      <button _="on click send hello to <form />">Send</button>
+      <form _="on hello alert('got event')">
+        <button
+          _="on pointerdown
+            repeat until event pointerup
+              set rand to Math.random() * 255
+              transition
+                *background-color
+                to \`hsl($rand 100% 90%)\`
+                over 250ms
+            end
+            "
+        >
+          try me, press and hold
+        </button>
+      </form>
+      <div id="GRAPH">
+        <ul id="1000" class="child">
+          <li class="dir" id="1001">Item 1</li>
+          <li class="dir" id="1002">Item 2</li>
+          <li class="dir" id="1003">Item 3</li>
+        </ul>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+      <script>
+        var nestedSortables = document.querySelectorAll(".child");
+        for (var i = 0; i < nestedSortables.length; i++) {
+          new Sortable(nestedSortables[i], {
+            group: "child",
+            animation: 100,
+            fallbackOnBody: true,
+            swapThreshold: 0.65,
+            onChoose: function (evt) {
+              evt.item.classList.add("highlight");
+            },
+            onUnchoose: function (evt) {
+              evt.item.classList.remove("highlight");
+            },
+          });
+        }
+      </script>
+      <script>
+        // SVGコンテナの参照を取得
+        const svgContainer = document.getElementById("GRAPH");
+
+        // 座標リストを初期化
+        let coordinatesList = [];
+
+        // 相手要素の座標を取得し、リストに保存する関数
+        function getAndSaveCoordinates(element) {
+          // data-edge属性を取得
+          const edgeAttr = element.getAttribute("data-edge");
+          if (edgeAttr) {
+            // 相手要素のIDを配列として取得
+            const targetIds = edgeAttr.split(",");
+            targetIds.forEach((targetId) => {
+              const targetElement = document.getElementById(targetId);
+              if (targetElement) {
+                // 自要素と相手要素の座標を取得
+                const rect1 = element.getBoundingClientRect();
+                const rect2 = targetElement.getBoundingClientRect();
+                const startX =
+                  rect1.left - svgContainer.getBoundingClientRect().left;
+                const startY =
+                  rect1.top - svgContainer.getBoundingClientRect().top;
+                const endX =
+                  rect2.left - svgContainer.getBoundingClientRect().left;
+                const endY =
+                  rect2.top - svgContainer.getBoundingClientRect().top;
+                // 座標をリストに保存
+                coordinatesList.push({
+                  start: { x: startX, y: startY },
+                  end: { x: endX, y: endY },
+                });
+              } else {
+                console.log("Error: Target element not found");
+              }
+            });
+          }
+        }
+
+        // 線を描画する関数
+        function drawLines() {
+          // 既存の線をクリア
+          while (svgContainer.firstChild) {
+            svgContainer.removeChild(svgContainer.firstChild);
+          }
+          // 新しい線を描画
+          coordinatesList.forEach((coord) => {
+            const line = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "line"
+            );
+            line.setAttribute("x1", coord.start.x);
+            line.setAttribute("y1", coord.start.y);
+            line.setAttribute("x2", coord.end.x);
+            line.setAttribute("y2", coord.end.y);
+            svgContainer.appendChild(line);
+          });
+        }
+
+        <!-- // Mutation Observerのインスタンスを作成
+        const observer = new MutationObserver((mutations) => {
+          coordinatesList = []; // 座標リストをリセット
+          document.querySelectorAll("[data-edge]").forEach((element) => {
+            getAndSaveCoordinates(element);
+          });
+          drawLines(); // 線を再描画
+        });
+
+        // 監視の設定
+        const config = { attributes: true, childList: true, subtree: true };
+
+        // SVGコンテナの監視を開始
+        observer.observe(svgContainer, config); -->
+      </script>
+    `,
+    headers: { "Content-Type": "text/html" },
+  });
+
+  router("/page/dsd", "GET", {
+    text: /*html*/ `
+      <d-s-d>
+        <template shadowrootmode="open">
+          <style>
+            button {
+              padding: 10px;
+              background-color: #008cba; /* Blue */
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+            }
+            button:hover {
+              background-color: #005f5f; /* Darker blue on hover */
+            }
+          </style>
+          <button><slot></slot></button>
+        </template>
+        button slot
+      </d-s-d>
+      <script>
+        class DSD extends HTMLElement {
+          constructor() {
+            super();
+            this.attachListeners();
+          }
+          attachListeners() {
+            this.shadowRoot
+              .querySelector("button")
+              .addEventListener("click", () => {
+                alert("Button clicked!");
+              });
+          }
+        }
+        if (customElements.get("d-s-d") === undefined)
+          customElements.define("d-s-d", DSD);
+      </script>
+    `,
+    headers: { "Content-Type": "text/html" },
+  });
 }
