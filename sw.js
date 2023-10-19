@@ -24,6 +24,10 @@ if (typeof importScripts === "function") {
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <button hx-get="${subDirectory}/hello" hx-target="#target" hx-swap="innerHTML">hx /hello</button><br />
     <div id="target"></div>
+    <form hx-post="${subDirectory}/api/form" hx-target="#submit" hx-swap="innerHTML">
+      <input id="input-form" name="user_input" hx-post="/validate" hx-trigger="change">
+      <button id="submit">submit</button>
+    </form>
     </div> `,
     headers: { "Content-Type": "text/html" },
   });
@@ -306,4 +310,17 @@ if (typeof importScripts === "function") {
     `,
     headers: { "Content-Type": "text/html" },
   });
+
+  workbox.routing.registerRoute(
+    new RegExp(`/api/form`),
+    ({ event }) => {
+      if (event.request.method === "POST") {
+        return event.request.text().then((body) => {
+          return new Response(body + "hello");
+        });
+      }
+      return new Response();
+    },
+    "POST"
+  );
 }
